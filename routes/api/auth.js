@@ -33,6 +33,7 @@ const updateSubscriptionSchema = Joi.object({
 router.post("/register", async (req, res, next) => {
   try {
     const { error } = registerSchema.validate(req.body);
+    
     if (error) {
       throw createError(error.message, 400);
     }
@@ -56,12 +57,14 @@ router.post("/register", async (req, res, next) => {
 router.post("/login", async (req, res, next) => {
   try {
     const { error } = logInSchema.validate(req.body);
+    
+
     if (error) {
       throw createError(error.message, 400);
     }
     const { email, password } = req.body;
     const user = await User.findOne({ email });
-    const passwordValid = await bcrypt.compare(password, user.password);
+    const passwordValid = await bcrypt.compare(password, user?.password);
     if (!passwordValid || !user) {
       throw createError("invalid email or password ", 401);
     }
@@ -75,6 +78,7 @@ router.post("/login", async (req, res, next) => {
     next(error);
   }
 });
+
 
 router.get("/logout", authorize, async (req, res, next) => {
   try {
